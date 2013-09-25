@@ -1,15 +1,15 @@
 <?php
-namespace Marcojanssen\Provider;
+namespace MJanssen\Provider;
 
 use Silex\Application;
-use Marcojanssen\Provider\RoutingServiceProvider;
+use MJanssen\Provider\RoutingServiceProvider;
 
 class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
 
     private $validRoute = array(
         'pattern' => '/foo',
-        'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+        'controller' => 'MJanssen\Controller\FooController::fooAction',
         'method' => array('get'),
         'scheme' => 'https',
         'value' => array(
@@ -36,12 +36,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app['config.routes'] = array(
             array(
                 'pattern' => '/foo',
-                'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete')
             ),
             array(
                 'pattern' => '/baz',
-                'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete')
             )
         );
@@ -64,12 +64,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routes = array(
             array(
                 'pattern' => '/foo',
-                'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete')
             ),
             array(
                 'pattern' => '/baz',
-                'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete')
             )
         );
@@ -90,7 +90,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $route = array(
             'pattern' => '/foo',
-            'controller' => 'Marcojanssen\Controller\FooController::fooAction',
+            'controller' => 'MJanssen\Controller\FooController::fooAction',
             'method' => array('get', 'post', 'put', 'delete')
         );
 
@@ -208,7 +208,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $route = $routeCollection->getIterator()->current();
         $defaults = $route->getDefaults();
 
-        $this->assertEquals('Marcojanssen\Controller\FooController::fooAction', $defaults['_controller']);
+        $this->assertEquals('MJanssen\Controller\FooController::fooAction', $defaults['_controller']);
     }
 
     /**

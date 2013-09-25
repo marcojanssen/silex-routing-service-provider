@@ -23,7 +23,7 @@
 ```json
 {
     "require": {
-        "marcojanssen/silex-routing-service-provider": "1.*"
+        "marcojanssen/silex-routing-service-provider": "1.0.*"
     }
 }
 ```
@@ -112,7 +112,7 @@ config.routes:
 
 use Silex\Application;
 use Igorw\Silex\ConfigServiceProvider;
-use Marcojanssen\Provider\ServiceRegisterProvider;
+use MJanssen\Provider\ServiceRegisterProvider;
 
 //Set all routes
 $app->register(
