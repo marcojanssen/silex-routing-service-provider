@@ -183,8 +183,9 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     {
         $routeCollection = $this->getValidRoute();
         $route = $routeCollection->getIterator()->current();
+        $schemes = $route->getSchemes();
 
-        $this->assertEquals('https', $route->getSchemes()[0]);
+        $this->assertEquals('https', $schemes[0]);
     }
 
     /**
