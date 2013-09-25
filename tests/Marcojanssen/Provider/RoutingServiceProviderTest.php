@@ -243,10 +243,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     {
         $routeCollection = $this->getValidRoute();
         $route = $routeCollection->getIterator()->current();
-        $requirements = $route->getRequirements();
+        $options = $route->getOptions();
 
-        $this->assertEquals('number', $requirements['id']);
-        $this->assertEquals('string', $requirements['string']);
+        $this->assertEquals('number', $options['_converters']['id']);
+        $this->assertEquals('string', $options['_converters']['name']);
     }
 
     /**
