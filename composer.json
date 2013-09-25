@@ -1,0 +1,16 @@
+{
+    "name": "marcojanssen/silex-routing-service-provider",
+    "keywords": ["silex"],
+    "license": "MIT",
+    "require": {
+        "silex/silex": "1.*"
+    },
+    "suggest": {
+        "igorw/config-service-provider": "1.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Marcojanssen\\": "src/"
+        }
+    }
+}
