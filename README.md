@@ -112,11 +112,11 @@ config.routes:
 
 use Silex\Application;
 use Igorw\Silex\ConfigServiceProvider;
-use MJanssen\Provider\ServiceRegisterProvider;
+use MJanssen\Provider\RoutingServiceProvider;
 
 //Set all routes
 $app->register(
-    new ConfigServiceProvider(__DIR__."/../app/config/routes.yml")
+    new RoutingServiceProvider(__DIR__."/../app/config/routes.yml")
 );
 
 //Add all routes
