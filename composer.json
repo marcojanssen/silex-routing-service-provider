@@ -1,12 +1,17 @@
 {
     "name": "marcojanssen/silex-routing-service-provider",
-    "keywords": ["silex"],
+    "authors": [{
+        "name": "Marco Janssen",
+        "email": "dev@marcojanssen.net"
+    }],
+    "keywords": ["silex", "provider", "routing", "route"],
+    "description": "Silex provider for adding routes",
     "license": "MIT",
     "require": {
         "silex/silex": "1.*"
     },
     "suggest": {
-        "igorw/config-service-provider": "1.2.*"
+        "igorw/config-service-provider": "Allows registering providers with configuration"
     },
     "autoload": {
         "psr-0": {
