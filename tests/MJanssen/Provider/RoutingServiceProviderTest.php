@@ -138,6 +138,19 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test if a method should be an array
+     * @expectedException InvalidArgumentException
+     */
+    public function testInvalidMethodValue()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+        $route['method'] = array('foo');
+        $routingServiceProvider->addRoute($app, $route);
+    }
+
+    /**
      * test if controller parameter is required
      * @expectedException InvalidArgumentException
      */
