@@ -91,10 +91,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
             ));
         }
 
-        $availableMethods = array('get', 'put', 'post', 'delete');
-        if(!in_array($route['method'], $availableMethods)) {
-            throw new InvalidArgumentException('Method is not valid, only the following methods are allowed: get, put, post, delete');
-        }
+
     }
 
     /**
@@ -131,6 +128,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function getController(Application $app, $route)
     {
+        $availableMethods = array('get', 'put', 'post', 'delete');
+        if(!in_array($route['method'], $availableMethods)) {
+            throw new InvalidArgumentException('Method is not valid, only the following methods are allowed: get, put, post, delete');
+        }
+
         return call_user_func_array(array($app, $route['method']), array($route['pattern'], $route['controller']));
     }
 
