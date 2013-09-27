@@ -23,7 +23,7 @@
 ```json
 {
     "require": {
-        "marcojanssen/silex-routing-service-provider": "1.0.*"
+        "marcojanssen/silex-routing-service-provider": "1.1.*"
     }
 }
 ```
@@ -35,7 +35,7 @@
 Each route is required to have the following parameters:
 * pattern (string) 
 * controller (string)
-* method - get, put, post, delete (array)
+* method - get, put, post, delete, options, head (array)
 
 Optionally the following parameters can also be added:
 * value (array) 
@@ -54,13 +54,16 @@ $assert = array('id' => '^[\d]+$')
 `index.php`
 ```php
 
-$app = new Silex\Application();
-$routingServiceProvider = new MJanssen\Provider\RoutingServiceProvider();
+use Silex\Application;
+use MJanssen\Provider\RoutingServiceProvider;
+
+$app = new Application();
+$routingServiceProvider = new RoutingServiceProvider();
 
 $route = array(
     'pattern' => '/foo',
     'controller' => 'Foo\Controller\FooController::fooAction',
-    'method' => array('get', 'post', 'put', 'delete')
+    'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
 );
 
 $routingServiceProvider->addRoute($app, $route);
@@ -72,19 +75,22 @@ $routingServiceProvider->addRoute($app, $route);
 `index.php`
 ```php
 
-$app = new Silex\Application();
-$routingServiceProvider = new MJanssen\Provider\RoutingServiceProvider();
+use Silex\Application;
+use MJanssen\Provider\RoutingServiceProvider;
+
+$app = new Application();
+$routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
     array(
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
-        'method' => array('get', 'post', 'put', 'delete')
+        'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
     ),
     array(
         'pattern' => '/baz',
         'controller' => 'Baz\Controller\BazController::bazAction',
-        'method' => array('get', 'post', 'put', 'delete')
+        'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
     )
 );
 
@@ -94,13 +100,13 @@ $routingServiceProvider->addRoutes($app, $route);
 
 ### Registering providers with configuration
 
-For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The ServiceRegisterProvider picks the stored configuration through the node `providers` in `$app['providers']`
+For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
 
 `routes.yml`
 
 ```yml
 
-config.routes:
+custom.routing.key:
   - pattern: '/foo'
     controller: 'Foo\Controller\FooController::fooAction'
     method: ['get', 'post']
@@ -114,16 +120,20 @@ use Silex\Application;
 use Igorw\Silex\ConfigServiceProvider;
 use MJanssen\Provider\RoutingServiceProvider;
 
+$app = new Application();
+
 //Set all routes
 $app->register(
     new RoutingServiceProvider(__DIR__."/../app/config/routes.yml")
 );
 
 //Add all routes
-$app->register(new RoutingServiceProvider);
+$app->register(new RoutingServiceProvider('custom.routing.key'));
 
 ```
 
+**Note**: It's recommended to use php instead of yml/xml/etc.
+
 ## Todo
 
-COnvert and before & after middleware still need to be implemented
+convert, before & after middleware still need to be implemented (if possible)
