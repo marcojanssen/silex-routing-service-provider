@@ -37,12 +37,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
             array(
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete')
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             ),
             array(
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete')
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             )
         );
 
@@ -50,7 +50,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(8, $routes);
+        $this->assertCount(12, $routes);
     }
 
     /**
@@ -65,19 +65,19 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
             array(
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete')
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             ),
             array(
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete')
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             )
         );
 
         $routingServiceProvider->addRoutes($app, $routes);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(8, $routes);
+        $this->assertCount(12, $routes);
     }
 
     /**
@@ -91,13 +91,13 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $route = array(
             'pattern' => '/foo',
             'controller' => 'MJanssen\Controller\FooController::fooAction',
-            'method' => array('get', 'post', 'put', 'delete')
+            'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
         );
 
         $routingServiceProvider->addRoute($app, $route);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(4, $routes);
+        $this->assertCount(6, $routes);
     }
 
     /**
