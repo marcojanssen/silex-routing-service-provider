@@ -65,12 +65,23 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     public function addRoute(Application $app, $route)
     {
-        if(!isset($route['pattern'])) {
-            throw new InvalidArgumentException('Pattern is not set');
-        }
+        $this->validateRoute($route);
 
-        if(!isset($route['method'])) {
-            throw new InvalidArgumentException('Method is not set');
+        foreach($route['method'] AS $method) {
+            $newRoute = $route;
+            $newRoute['method'] = $method;
+            $this->setRouteByMethod($app, $newRoute);
+        }
+    }
+
+    /**
+     * @param $route
+     * @throws \InvalidArgumentException
+     */
+    protected function validateRoute($route)
+    {
+        if(!isset($route['pattern']) || !isset($route['method']) || !isset($route['controller'])) {
+            throw new InvalidArgumentException('Required parameter (pattern/method/controller) is not set.');
         }
 
         if(!is_array($route['method'])) {
@@ -80,14 +91,9 @@ class RoutingServiceProvider implements ServiceProviderInterface
             ));
         }
 
-        if(!isset($route['controller'])) {
-            throw new InvalidArgumentException('Controller is not set');
-        }
-
-        foreach($route['method'] AS $method) {
-            $newRoute = $route;
-            $newRoute['method'] = $method;
-            $this->setRouteByMethod($app, $newRoute);
+        $availableMethods = array('get', 'put', 'post', 'delete');
+        if(!in_array($route['method'], $availableMethods)) {
+            throw new InvalidArgumentException('Method is not valid, only the following methods are allowed: get, put, post, delete');
         }
     }
 
@@ -125,11 +131,6 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function getController(Application $app, $route)
     {
-        $availableMethods = array('get', 'put', 'post', 'delete');
-        if(!in_array($route['method'], $availableMethods)) {
-            throw new InvalidArgumentException('Method is not valid, only the following methods are allowed: get, put, post, delete');
-        }
-
         return call_user_func_array(array($app, $route['method']), array($route['pattern'], $route['controller']));
     }
 
