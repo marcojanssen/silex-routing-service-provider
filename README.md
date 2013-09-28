@@ -102,14 +102,28 @@ $routingServiceProvider->addRoutes($app, $route);
 
 For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
 
-`routes.yml`
+`routes.php`
 
-```yml
+```php
 
-custom.routing.key:
-  - pattern: '/foo'
-    controller: 'Foo\Controller\FooController::fooAction'
-    method: ['get', 'post']
+return array(
+    'custom.routing.key' => array(
+        array(
+            'pattern' => '/foo/{id}',
+            'controller' => 'Foo\Controllers\FooController::getAction',
+            'method' => array(
+                'get'
+            ),
+            'assert' => array(
+                'id' => '^[\d]+$'
+            ),
+            'value' => array(
+                'value1' => 'foo',
+                'value2' => 'baz'
+            )
+        )
+    )
+);
 
 ```
 
@@ -124,7 +138,7 @@ $app = new Application();
 
 //Set all routes
 $app->register(
-    new RoutingServiceProvider(__DIR__."/../app/config/routes.yml")
+    new RoutingServiceProvider(__DIR__."/../app/config/routes.php")
 );
 
 //Add all routes

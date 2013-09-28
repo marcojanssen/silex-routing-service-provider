@@ -84,14 +84,16 @@ class RoutingServiceProvider implements ServiceProviderInterface
             throw new InvalidArgumentException('Required parameter (pattern/method/controller) is not set.');
         }
 
-        if(!is_array($route['method'])) {
-            throw new InvalidArgumentException(sprintf(
-                'Method is not of type Array (%s)',
-                gettype($route['method'])
-            ));
+        $arrayParameters = array('method', 'assert', 'value');
+
+        foreach($arrayParameters as $parameter) {
+            if(isset($route[$parameter]) && !is_array($route[$parameter])) {
+                throw new InvalidArgumentException(sprintf(
+                    '%s is not of type Array (%s)',
+                    $parameter, gettype($route[$parameter])
+                ));
+            }
         }
-
-
     }
 
     /**
@@ -110,10 +112,6 @@ class RoutingServiceProvider implements ServiceProviderInterface
             $this->addActions($controller, $route['assert'], 'assert');
         }
 
-        if(isset($route['convert'])) {
-            $this->addActions($controller, $route['convert'], 'convert');
-        }
-
         if(isset($route['scheme'])) {
             if('https' === $route['scheme']) {
                 $controller->requireHttps();
@@ -124,7 +122,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
     /**
      * @param Application $app
      * @param $route
-     * @return \Silex\Controller
+     * @return Controller
      */
     protected function getController(Application $app, $route)
     {
@@ -156,25 +154,20 @@ class RoutingServiceProvider implements ServiceProviderInterface
             );
             $this->addAction($controller, $actions, $type);
         } else {
-            foreach ($actions as $action) {
-                $this->addAction($controller, $action, $type);
+            foreach ($actions as $name => $value) {
+                $this->addAction($controller, $name, $value, $type);
             }
         }
     }
 
     /**
      * @param Controller $controller
-     * @param $action
+     * @param $name
+     * @param $value
      * @param $type
      */
-    protected function addAction(Controller $controller, $action, $type)
+    protected function addAction(Controller $controller, $name, $value, $type)
     {
-        if(is_array($action)) {
-            $name = key($action);
-            $value = $action[$name];
-            $action = array($name, $value);
-        }
-
-        call_user_func_array(array($controller, $type), $action);
+        call_user_func_array(array($controller, $type), array($name, $value));
     }
 }

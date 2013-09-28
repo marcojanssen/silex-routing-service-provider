@@ -13,16 +13,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         'method' => array('get'),
         'scheme' => 'https',
         'value' => array(
-            array('value1' => 'foo'),
-            array('value2' => 'baz')
+            'value1' => 'foo',
+            'value2' => 'baz'
         ),
         'assert' => array(
-            array('id' => 'regexp_id'),
-            array('name' => 'regexp_name')
-        ),
-        'convert' => array(
-            array('id' => 'number'),
-            array('name' => 'string')
+            'id' => 'regexp_id',
+            'name' => 'regexp_name'
         )
     );
 
@@ -248,19 +244,6 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('regexp_id', $requirements['id']);
         $this->assertEquals('regexp_name', $requirements['name']);
-    }
-
-    /**
-     * test if convert matches
-     */
-    public function testRouteConvert()
-    {
-        $routeCollection = $this->getValidRoute();
-        $route = $routeCollection->getIterator()->current();
-        $options = $route->getOptions();
-
-        $this->assertEquals('number', $options['_converters']['id']);
-        $this->assertEquals('string', $options['_converters']['name']);
     }
 
     /**
