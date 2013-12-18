@@ -112,6 +112,10 @@ class RoutingServiceProvider implements ServiceProviderInterface
             $this->addActions($controller, $route['assert'], 'assert');
         }
 
+        if(isset($route['before'])) {
+            $controller->before($route['before']);
+        }
+
         if(isset($route['scheme'])) {
             if('https' === $route['scheme']) {
                 $controller->requireHttps();
