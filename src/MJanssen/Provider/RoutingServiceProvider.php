@@ -113,10 +113,16 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
 
         if(isset($route['before'])) {
+            if (!is_callable($route['before'])) {
+                throw new InvalidArgumentException('Before needs to be a callback');
+            }
             $controller->before($route['before']);
         }
 
         if(isset($route['after'])) {
+            if (!is_callable($route['after'])) {
+                throw new InvalidArgumentException('After needs to be a callback');
+            }
             $controller->after($route['after']);
         }
 
