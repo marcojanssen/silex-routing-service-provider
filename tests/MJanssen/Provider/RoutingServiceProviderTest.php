@@ -258,4 +258,23 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         return $app['controllers']->flush();
     }
+
+    public function testValidAfter()
+    {
+        $app = new Application();
+
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+        $route['after'] = function() {};
+        $routingServiceProvider->addRoute($app, $route);
+    }
+
+    public function testValidBefore()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+        $route['before'] = function(){};
+        $routingServiceProvider->addRoute($app, $route);
+    }
 }
