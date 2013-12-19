@@ -27,6 +27,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
 
     /**
      * @param Application $app
+     * @throws \InvalidArgumentException
      */
     public function register(Application $app)
     {
@@ -96,9 +97,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
     }
 
+
     /**
      * @param Application $app
      * @param $route
+     * @throws \InvalidArgumentException
      */
     protected function addRouteByMethod(Application $app, $route)
     {
@@ -112,6 +115,20 @@ class RoutingServiceProvider implements ServiceProviderInterface
             $this->addActions($controller, $route['assert'], 'assert');
         }
 
+        if(isset($route['before'])) {
+            if (!is_callable($route['before'])) {
+                throw new InvalidArgumentException('Before needs to be a callback');
+            }
+            $controller->before($route['before']);
+        }
+
+        if(isset($route['after'])) {
+            if (!is_callable($route['after'])) {
+                throw new InvalidArgumentException('After needs to be a callback');
+            }
+            $controller->after($route['after']);
+        }
+
         if(isset($route['scheme'])) {
             if('https' === $route['scheme']) {
                 $controller->requireHttps();
@@ -122,7 +139,8 @@ class RoutingServiceProvider implements ServiceProviderInterface
     /**
      * @param Application $app
      * @param $route
-     * @return Controller
+     * @return mixed|Controller
+     * @throws \InvalidArgumentException
      */
     protected function getController(Application $app, $route)
     {
@@ -142,6 +160,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
      * @param Controller $controller
      * @param $actions
      * @param $type
+     * @throws \InvalidArgumentException
      */
     protected function addActions(Controller $controller, $actions, $type)
     {
