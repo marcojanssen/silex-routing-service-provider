@@ -151,4 +151,4 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 ## Todo
 
 convert as whole, there is no option set this per rout at the moment
-before & after middleware still need to be implemented using xml and yml. This due to the fact that defining a callback might not be possible in yml and xml
+before & after middleware still need to be implemented using xml and yml. (if possible)
