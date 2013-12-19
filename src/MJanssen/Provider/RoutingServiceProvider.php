@@ -27,6 +27,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
 
     /**
      * @param Application $app
+     * @throws \InvalidArgumentException
      */
     public function register(Application $app)
     {
@@ -96,9 +97,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
     }
 
+
     /**
      * @param Application $app
      * @param $route
+     * @throws \InvalidArgumentException
      */
     protected function addRouteByMethod(Application $app, $route)
     {
@@ -136,7 +139,8 @@ class RoutingServiceProvider implements ServiceProviderInterface
     /**
      * @param Application $app
      * @param $route
-     * @return Controller
+     * @return mixed|Controller
+     * @throws \InvalidArgumentException
      */
     protected function getController(Application $app, $route)
     {
@@ -156,6 +160,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
      * @param Controller $controller
      * @param $actions
      * @param $type
+     * @throws \InvalidArgumentException
      */
     protected function addActions(Controller $controller, $actions, $type)
     {
