@@ -117,7 +117,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
 
         if(isset($route['after'])) {
-            $controller-after($route['after']);
+            $controller->after($route['after']);
         }
 
         if(isset($route['scheme'])) {
