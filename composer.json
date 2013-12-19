@@ -14,8 +14,7 @@
         "igorw/config-service-provider": "Allows registering providers with configuration"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "codeception/codeception": "*"
+        "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
         "psr-0": {
