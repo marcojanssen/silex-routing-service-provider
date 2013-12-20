@@ -114,7 +114,8 @@ class MiddleWare {
 ```
 
 #### Using the middleware class in the route configuration
-```
+
+
 `index.php`
 ```php
 use Silex\Application;
