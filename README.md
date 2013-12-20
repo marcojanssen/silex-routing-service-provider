@@ -186,5 +186,5 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 
 ## Todo
 
-convert as whole, there is no option set this per rout at the moment
+convert, there is no option set this per route at the moment
 before & after middleware still need to be implemented using xml and yml. (if possible)
