@@ -99,7 +99,7 @@ $routingServiceProvider->addRoutes($app, $route);
 ```
 ### Adding before/after middleware
 To add controller middleware you can use the 'after' and 'before' key of the route configuration. The 'before' key is used to run the middleware code before the controller logic is executed, after execution of the controller logic.
-Below is an example using a middleware class and how to configure this in the route config. Instead of using a middleware class you can also use a regular callback.\
+Below is an example using a middleware class and how to configure this in the route config. Instead of using a middleware class you can also use a regular callback.
 
 **Note** Be aware that currently there is only support for php.
 
