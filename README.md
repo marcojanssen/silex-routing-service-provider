@@ -149,7 +149,7 @@ $routes = array(
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get'),
         // this is where it all happens!
-        'before' => new MiddleWare()
+        'before' => array(new MiddleWare())
     )
 );
 $routingServiceProvider->addRoutes($app, $route);
