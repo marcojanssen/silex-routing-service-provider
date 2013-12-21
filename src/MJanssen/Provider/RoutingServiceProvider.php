@@ -107,26 +107,12 @@ class RoutingServiceProvider implements ServiceProviderInterface
     {
         $controller = $this->getController($app, $route);
 
-        if(isset($route['value'])) {
-            $this->addActions($controller, $route['value'], 'value');
-        }
+        $supportedProperties = array('value', 'assert', 'before', 'after');
 
-        if(isset($route['assert'])) {
-            $this->addActions($controller, $route['assert'], 'assert');
-        }
-
-        if(isset($route['before'])) {
-            if (!is_callable($route['before'])) {
-                throw new InvalidArgumentException('Before needs to be a callback');
+        foreach($supportedProperties AS $property) {
+            if(isset($route[$property])) {
+                $this->addActions($controller, $route[$property], $property);
             }
-            $controller->before($route['before']);
-        }
-
-        if(isset($route['after'])) {
-            if (!is_callable($route['after'])) {
-                throw new InvalidArgumentException('After needs to be a callback');
-            }
-            $controller->after($route['after']);
         }
 
         if(isset($route['scheme'])) {
@@ -171,11 +157,10 @@ class RoutingServiceProvider implements ServiceProviderInterface
                     $type, gettype($actions)
                 )
             );
-            $this->addAction($controller, $actions, $type);
-        } else {
-            foreach ($actions as $name => $value) {
-                $this->addAction($controller, $name, $value, $type);
-            }
+        }
+
+        foreach ($actions as $name => $value) {
+            $this->addAction($controller, $name, $value, $type);
         }
     }
 

@@ -264,7 +264,11 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
-        $route['after'] = function() { return 'foo'; };
+        $route['after'] = array(
+            function() { return 'foo'; },
+            function() { return 'baz'; }
+
+        );
         $routingServiceProvider->addRoute($app, $route);
     }
 
@@ -273,7 +277,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
-        $route['before'] = function() { return 'foo'; };
+        $route['before'] = array(
+            function() { return 'foo'; },
+            function() { return 'baz'; }
+        );
         $routingServiceProvider->addRoute($app, $route);
 
     }
