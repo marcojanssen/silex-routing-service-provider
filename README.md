@@ -97,7 +97,47 @@ $routes = array(
 $routingServiceProvider->addRoutes($app, $route);
 
 ```
+### Adding before/after middleware
+To add controller middleware you can use the 'after' and 'before' key of the route configuration. The 'before' key is used to run the middleware code before the controller logic is executed, after execution of the controller logic.
+Below is an example using a middleware class and how to configure this in the route config. Instead of using a middleware class you can also use a regular callback.
 
+**Note** Be aware that currently there is only support for php.
+
+#### Example middleware class:
+
+```php
+class MiddleWare {
+
+    public function __invoke(Request $request, Application $app)
+    {
+        //do stuff
+        $x = 1;
+    }
+}
+```
+
+#### Using the middleware class in the route configuration
+
+
+`index.php`
+```php
+use Silex\Application;
+use MJanssen\Provider\RoutingServiceProvider;
+
+$app = new Application();
+$routingServiceProvider = new RoutingServiceProvider();
+
+$routes = array(
+    array(
+        'pattern' => '/foo',
+        'controller' => 'Foo\Controller\FooController::fooAction',
+        'method' => array('get'),
+        // this is where it all happens!
+        'before' => new MiddleWare()
+    )
+);
+$routingServiceProvider->addRoutes($app, $route);
+```
 ### Registering providers with configuration
 
 For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
@@ -150,4 +190,5 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 
 ## Todo
 
-convert, before & after middleware still need to be implemented (if possible)
+convert, there is no option set this per route at the moment
+before & after middleware still need to be implemented using xml and yml. (if possible)
