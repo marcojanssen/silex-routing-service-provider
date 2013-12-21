@@ -23,7 +23,7 @@
 ```json
 {
     "require": {
-        "marcojanssen/silex-routing-service-provider": "1.1.*"
+        "marcojanssen/silex-routing-service-provider": "1.2.*"
     }
 }
 ```
