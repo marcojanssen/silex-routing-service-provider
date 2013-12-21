@@ -38,14 +38,30 @@ Each route is required to have the following parameters:
 * method - get, put, post, delete, options, head (array)
 
 Optionally the following parameters can also be added:
-* value (array) 
+* value (array)
+
 ``` php
 $value = array('name' => 'value')
 ```
+
 * assert (array)
+
 ``` php
 $assert = array('id' => '^[\d]+$')
 ```
+
+* before (array)
+
+``` php
+$before = array('before' => function() {})
+```
+
+* after (array)
+
+``` php
+$after = array('after' => function() {})
+```
+
 
 ## Usage
 
