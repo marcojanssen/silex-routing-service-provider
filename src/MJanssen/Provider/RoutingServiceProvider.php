@@ -160,7 +160,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
 
         foreach ($actions as $name => $value) {
-            $this->addAction($controller, $name, $value, $type);
+            if (is_callable($value)){//for before and after actions fix
+                $controller->$type($value);
+            } else {
+                $this->addAction($controller, $name, $value, $type);
+            }
         }
     }
 
