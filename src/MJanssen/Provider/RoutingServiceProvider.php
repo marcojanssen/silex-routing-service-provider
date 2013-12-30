@@ -150,7 +150,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function addActions(Controller $controller, $actions, $type)
     {
-        if(!is_array($actions)) {
+        if (!is_array($actions)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Action %s is not of type Array (%s)',
@@ -160,10 +160,15 @@ class RoutingServiceProvider implements ServiceProviderInterface
         }
 
         foreach ($actions as $name => $value) {
-            if (is_callable($value)){//for before and after actions fix
-                $controller->$type($value);
-            } else {
-                $this->addAction($controller, $name, $value, $type);
+            switch ($type) {
+                case 'after':
+                case 'before':
+                    $controller->$type($value);
+                    break;
+
+                default:
+                    $this->addAction($controller, $name, $value, $type);
+                    break;
             }
         }
     }
