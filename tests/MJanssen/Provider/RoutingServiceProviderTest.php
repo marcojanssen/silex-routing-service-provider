@@ -3,6 +3,9 @@ namespace MJanssen\Provider;
 
 use Silex\Application;
 use MJanssen\Provider\RoutingServiceProvider;
+use Silex\ControllerCollection;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,12 +33,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
 
         $app['config.routes'] = array(
-            array(
+            'foo' => array(
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             ),
-            array(
+            'baz' => array(
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -46,7 +49,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(12, $routes);
+        $this->assertCount(2, $routes);
     }
 
     /**
@@ -58,12 +61,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
 
         $routes = array(
-            array(
+            'foo' =>  array(
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             ),
-            array(
+            'baz' => array(
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -73,7 +76,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider->addRoutes($app, $routes);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(12, $routes);
+        $this->assertCount(2, $routes);
     }
 
     /**
@@ -85,6 +88,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
 
         $route = array(
+            'routeName' => 'foo',
             'pattern' => '/foo',
             'controller' => 'MJanssen\Controller\FooController::fooAction',
             'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -93,7 +97,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider->addRoute($app, $route);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(6, $routes);
+        $this->assertCount(1, $routes);
     }
 
     /**
@@ -219,6 +223,26 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('MJanssen\Controller\FooController::fooAction', $defaults['_controller']);
     }
+
+    /**
+     * test if routeName matches
+     */
+    public function testRouteName()
+    {
+
+        $routeName = 'fooRouteName';
+
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+        $route['routeName'] = $routeName;
+        $routingServiceProvider->addRoute($app, $route);
+        /** @var RouteCollection $routeCollection */
+        $routeCollection = $app['controllers']->flush();
+        $this->assertEquals($routeName, $routeCollection->getIterator()->key());
+
+    }
+
 
     /**
      * test if values matches

@@ -37,7 +37,22 @@ Each route is required to have the following parameters:
 * controller (string)
 * method - get, put, post, delete, options, head (array)
 
+Optionally, you can set a route name (for [named routes](http://silex.sensiolabs.org/doc/usage.html#named-routes)). The key of the $route-array will be used as the route name or you can set it like this:
+
+```php
+$routes = array(
+    'foo' => array(
+        //'routeName' => 'foo', --> you can omit the routeName if a key is set
+        'pattern' => '/foo',
+        'controller' => 'Foo\Controller\FooController::fooAction',
+        'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+    )
+);
+
+```
+
 Optionally the following parameters can also be added:
+
 * value (array)
 
 ``` php
@@ -62,7 +77,6 @@ $before = array('before' => function() {})
 $after = array('after' => function() {})
 ```
 
-
 ## Usage
 
 ### Adding a single route
@@ -77,6 +91,7 @@ $app = new Application();
 $routingServiceProvider = new RoutingServiceProvider();
 
 $route = array(
+    'routeName' => 'foo',
     'pattern' => '/foo',
     'controller' => 'Foo\Controller\FooController::fooAction',
     'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -98,12 +113,14 @@ $app = new Application();
 $routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
-    array(
+    'foo' => array(
+        //'routeName' => 'foo', --> you can omit the routeName if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
     ),
-    array(
+    'baz' => array(
+        //'routeName' => 'baz', --> you can omit the routeName if a key is set
         'pattern' => '/baz',
         'controller' => 'Baz\Controller\BazController::bazAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -144,7 +161,8 @@ $app = new Application();
 $routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
-    array(
+    'foo' => array(
+        //'routeName' => 'foo', --> you can omit the routeName if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get'),
@@ -157,6 +175,18 @@ $routingServiceProvider->addRoutes($app, $route);
 ### Registering providers with configuration
 
 For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
+***Note: The key of the array will also be used as the routeName, so you can omit routeName.
+
+`routes.yaml`
+
+```yaml
+config.routes:
+    home:
+        routeName: 'home'
+        pattern: /
+        method: [ 'get', 'post' ]
+        controller: 'Foo\Controllers\FooController::getAction'
+```
 
 `routes.php`
 
@@ -202,7 +232,7 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 
 ```
 
-**Note**: It's recommended to use php instead of yml/xml/etc.
+**Note**: It's recommended to use php instead of yml/xml/etc, because it can be opcached. Otherwise you have to implement a caching mechanism yourself.
 
 ## Todo
 
