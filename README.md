@@ -1,10 +1,11 @@
-# RoutingServiceProvider #
+# RoutingServiceProvider
 
------
-
-[![Build Status](https://travis-ci.org/marcojanssen/silex-routing-service-provider.png?branch=master)](https://travis-ci.org/marcojanssen/silex-routing-service-provider)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider/badges/quality-score.png?s=ee8a98ec16a263e96f27ccf6be68db3d434d1156)](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider/)
-[![Code Coverage](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider/badges/coverage.png?s=c0ad7b2616ce7c0b5e472457d7ec49063f86f527)](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider/)
+[![Latest Version](https://img.shields.io/github/release/marcojanssen/silex-routing-service-provider.svg?style=flat-square)](https://github.com/marcojanssen/silex-routing-service-provider/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Build Status](https://img.shields.io/travis/marcojanssen/silex-routing-service-provider/master.svg?style=flat-square)](https://travis-ci.org/marcojanssen/silex-routing-service-provider)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/marcojanssen/silex-routing-service-provider.svg?style=flat-square)](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/marcojanssen/silex-routing-service-provider.svg?style=flat-square)](https://scrutinizer-ci.com/g/marcojanssen/silex-routing-service-provider)
+[![Total Downloads](https://img.shields.io/packagist/dt/marcojanssen/silex-routing-service-provider.svg?style=flat-square)](https://packagist.org/packages/marcojanssen/silex-routing-service-provider)
 
 **RoutingServiceProvider** is a silex provider for easily adding routes
 
@@ -23,7 +24,7 @@
 ```json
 {
     "require": {
-        "marcojanssen/silex-routing-service-provider": "1.2.*"
+        "marcojanssen/silex-routing-service-provider": "1.3.*"
     }
 }
 ```
