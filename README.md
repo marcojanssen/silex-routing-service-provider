@@ -17,19 +17,11 @@
 
 ## Installing
 
-- Install [Composer](http://getcomposer.org)
+Via Composer
 
-- Add `marcojanssen/silex-routing-service-provider` to your `composer.json`:
-
-```json
-{
-    "require": {
-        "marcojanssen/silex-routing-service-provider": "1.3.*"
-    }
-}
 ```
-
-- Install/update your dependencies
+composer require marcojanssen/silex-routing-service-provider
+```
 
 ## Options
 
