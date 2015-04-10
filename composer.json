@@ -1,24 +1,34 @@
 {
-    "name": "marcojanssen/silex-routing-service-provider",
-    "authors": [{
-        "name": "Marco Janssen",
-        "email": "dev@marcojanssen.net"
-    }],
-    "keywords": ["silex", "provider", "routing", "route"],
-    "description": "Silex provider for adding routes",
-    "license": "MIT",
-    "require": {
-        "silex/silex": "1.*"
-    },
-    "suggest": {
-        "igorw/config-service-provider": "Allows registering providers with configuration"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*"
-    },
-    "autoload": {
-        "psr-0": {
-            "MJanssen\\": "src/"
-        }
+  "name": "marcojanssen/silex-routing-service-provider",
+  "authors": [
+    {
+      "name": "Marco Janssen",
+      "email": "dev@marcojanssen.net"
+    },{
+      "name": "Samir Rachidi",
+      "email": "sr@plusb.de"
     }
+  ],
+  "keywords": [
+    "silex",
+    "provider",
+    "routing",
+    "route"
+  ],
+  "description": "Silex provider for adding routes",
+  "license": "MIT",
+  "require": {
+    "silex/silex": "1.*"
+  },
+  "suggest": {
+    "igorw/config-service-provider": "Allows registering providers with configuration"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "3.7.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "MJanssen\\": "src/"
+    }
+  }
 }
