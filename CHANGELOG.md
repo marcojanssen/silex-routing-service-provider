@@ -1,3 +1,6 @@
+## 1.3.0
+    * @samir-plusb Added named routes
+
 ## 1.2.0
     * @Richard-NL / @lkalinka: Before / After middleware (#1 / #2)
 

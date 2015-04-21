@@ -35,7 +35,7 @@ Optionally, you can set a route name (for [named routes](http://silex.sensiolabs
 ```php
 $routes = array(
     'foo' => array(
-        //'routeName' => 'foo', --> you can omit the routeName if a key is set
+        //'name' => 'foo', --> you can omit the name if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -84,7 +84,7 @@ $app = new Application();
 $routingServiceProvider = new RoutingServiceProvider();
 
 $route = array(
-    'routeName' => 'foo',
+    'name' => 'foo',
     'pattern' => '/foo',
     'controller' => 'Foo\Controller\FooController::fooAction',
     'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -107,13 +107,13 @@ $routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
     'foo' => array(
-        //'routeName' => 'foo', --> you can omit the routeName if a key is set
+        //'name' => 'foo', --> you can omit the routeName if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
     ),
     'baz' => array(
-        //'routeName' => 'baz', --> you can omit the routeName if a key is set
+        //'name' => 'baz', --> you can omit the routeName if a key is set
         'pattern' => '/baz',
         'controller' => 'Baz\Controller\BazController::bazAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')

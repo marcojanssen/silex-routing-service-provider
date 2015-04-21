@@ -57,13 +57,13 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     public function addRoutes(Application $app, $routes)
     {
-        foreach ($routes as $routeName => $route) {
-            if(!array_key_exists('routeName', $route)){
-                if(is_string($routeName) && !array_key_exists('routeName', $route)){
-                    $route['routeName'] = $routeName;
-                }
+        foreach ($routes as $name => $route) {
+
+            if (is_numeric($name)) {
+                $name = '';
             }
-            $this->addRoute($app, $route);
+
+            $this->addRoute($app, $route, $name);
         }
     }
 
@@ -74,21 +74,20 @@ class RoutingServiceProvider implements ServiceProviderInterface
      * @param array $route
      * @throws InvalidArgumentException
      */
-    public function addRoute(Application $app, Array $route)
+    public function addRoute(Application $app, array $route, $name = '')
     {
         $this->validateRoute($route);
 
-        $routeName = '';
-        if(array_key_exists('routeName', $route)){
-            $routeName = $route['routeName'];
+
+        if (array_key_exists('name', $route)) {
+            $name = $route['name'];
         }
-        $route['routeName'] = $this->sanitizeRouteName($routeName);
 
         $controller = $app->match(
             $route['pattern'],
             $route['controller'])
             ->bind(
-                $route['routeName']
+                $this->sanitizeRouteName($name)
             )->method(
                 join('|',array_map('strtoupper', $route['method']))
             );
@@ -116,8 +115,8 @@ class RoutingServiceProvider implements ServiceProviderInterface
     protected function validateMethods(Array $methods)
     {
         $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head');
-        foreach(array_map('strtolower', $methods) as $method){
-            if(!in_array($method, $availableMethods)){
+        foreach(array_map('strtolower', $methods) as $method) {
+            if (!in_array($method, $availableMethods)) {
                 throw new InvalidArgumentException('Method "' . $method . '" is not valid, only the following methods are allowed: ' . join(', ', $availableMethods));
             }
         }
@@ -164,13 +163,15 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function sanitizeRouteName($routeName)
     {
-        if(empty($routeName)){
+        if (empty($routeName)) {
             //If no routeName is specified,
             //we set an empty route name to force the default route name e.g. "GET_myRouteName"
             return '';
         }
+
         $routeName = str_replace(array('/', ':', '|', '-'), '_', $routeName);
         $routeName = preg_replace('/[^a-z0-9A-Z_.]+/', '', $routeName);
+
         return $routeName;
     }
 

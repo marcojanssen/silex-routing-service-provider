@@ -42,6 +42,17 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+            ),
+            array(
+                'name' => 'fez',
+                'pattern' => '/fez',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+            ),
+            array(
+                'pattern' => '/yez',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             )
         );
 
@@ -49,7 +60,23 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(2, $routes);
+        $this->assertCount(4, $routes);
+
+        $iterator = $routes->getIterator();
+
+        $this->assertEquals('foo', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('baz', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('fez', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('GET_POST_PUT_DELETE_OPTIONS_HEAD_yez', $iterator->key());
     }
 
     /**
@@ -70,13 +97,41 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+            ),
+            array(
+                'name' => 'fez',
+                'pattern' => '/fez',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+            ),
+            array(
+                'pattern' => '/yez',
+                'controller' => 'MJanssen\Controller\FooController::fooAction',
+                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
             )
+
         );
 
         $routingServiceProvider->addRoutes($app, $routes);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(2, $routes);
+        $this->assertCount(4, $routes);
+
+        $iterator = $routes->getIterator();
+
+        $this->assertEquals('foo', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('baz', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('fez', $iterator->key());
+
+        $iterator->next();
+
+        $this->assertEquals('GET_POST_PUT_DELETE_OPTIONS_HEAD_yez', $iterator->key());
     }
 
     /**
@@ -88,7 +143,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
 
         $route = array(
-            'routeName' => 'foo',
+            'name' => 'foo',
             'pattern' => '/foo',
             'controller' => 'MJanssen\Controller\FooController::fooAction',
             'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -229,18 +284,19 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRouteName()
     {
-
         $routeName = 'fooRouteName';
 
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
+
         $route = $this->validRoute;
-        $route['routeName'] = $routeName;
+        $route['name'] = $routeName;
         $routingServiceProvider->addRoute($app, $route);
+
         /** @var RouteCollection $routeCollection */
         $routeCollection = $app['controllers']->flush();
-        $this->assertEquals($routeName, $routeCollection->getIterator()->key());
 
+        $this->assertEquals($routeName, $routeCollection->getIterator()->key());
     }
 
 
