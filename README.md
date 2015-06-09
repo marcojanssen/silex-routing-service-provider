@@ -107,13 +107,13 @@ $routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
     'foo' => array(
-        //'name' => 'foo', --> you can omit the routeName if a key is set
+        //'name' => 'foo', --> you can omit the route name if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
     ),
     'baz' => array(
-        //'name' => 'baz', --> you can omit the routeName if a key is set
+        //'name' => 'baz', --> you can omit the route name if a key is set
         'pattern' => '/baz',
         'controller' => 'Baz\Controller\BazController::bazAction',
         'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -155,7 +155,7 @@ $routingServiceProvider = new RoutingServiceProvider();
 
 $routes = array(
     'foo' => array(
-        //'routeName' => 'foo', --> you can omit the routeName if a key is set
+        //'name' => 'foo', --> you can omit the route name if a key is set
         'pattern' => '/foo',
         'controller' => 'Foo\Controller\FooController::fooAction',
         'method' => array('get'),
@@ -165,17 +165,39 @@ $routes = array(
 );
 $routingServiceProvider->addRoutes($app, $route);
 ```
-### Registering providers with configuration
 
-For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
-***Note: The key of the array will also be used as the routeName, so you can omit routeName.
+#### Adding a route middleware class via yml
+
+You can add middleware classes via yml-/xml-configuration. Example: 
 
 `routes.yaml`
 
 ```yaml
 config.routes:
     home:
-        routeName: 'home'
+        name: 'home'
+        pattern: /
+        method: [ 'get', 'post' ]
+        controller: 'Foo\Controllers\FooController::getAction'
+        before: 'Foo\Middleware\FooController::before'
+        after: 'Foo\Middleware\FooController::after'
+```
+The methods' interface need to match the Silex specification. Further information about route middleware classses: http://silex.sensiolabs.org/doc/middlewares.html#route-middlewares.
+
+ATTENTION: Unfortunately with this way, you cannot use the ´__invoke´ method described above.
+
+
+### Registering providers with configuration
+
+For this example the [ConfigServiceProvider](https://github.com/igorw/ConfigServiceProvider) is used to read the yml file. The RoutingServiceProvider picks the stored configuration through the node `config.routing` as in `$app['config.routing']` by default. If you want to set a different key, add it as parameter when instantiating the RoutingServiceProvider
+***Note: The key of the array will also be used as the ´route´, so you can omit ´route.
+
+`routes.yaml`
+
+```yaml
+config.routes:
+    home:
+        name: 'home'
         pattern: /
         method: [ 'get', 'post' ]
         controller: 'Foo\Controllers\FooController::getAction'
@@ -230,4 +252,3 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 ## Todo
 
 convert, there is no option set this per route at the moment
-before & after middleware still need to be implemented using xml and yml. (if possible)

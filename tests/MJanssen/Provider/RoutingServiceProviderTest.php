@@ -262,9 +262,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     public function testRoutePattern()
     {
         $routeCollection = $this->getValidRoute();
+        /** @var \Silex\Route $route */
         $route = $routeCollection->getIterator()->current();
 
-        $this->assertEquals('/foo', $route->getPattern());
+        $this->assertEquals('/foo', $route->getPath());
     }
 
     /**
@@ -386,6 +387,31 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
         $route['before'] = '';
+        $routingServiceProvider->addRoute($app, $route);
+
+    }
+
+    /**
+     *
+     */
+    public function testAddBeforeAfterMiddlewareByString()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+
+        $mwClassName = 'FooMiddleware';
+        $mwMethod = 'foo';
+
+        //Create a Middleware-class mock
+        /** @var \PHPUnit_Framework_MockObject_MockObject $fooMiddleware */
+        $fooMiddleware = $this->getMockBuilder('none')
+            ->setMockClassName($mwClassName)
+            ->setMethods(array($mwMethod))
+            ->getMock();
+
+        $route['before'] = [$mwClassName . '::' . $mwMethod];
+
         $routingServiceProvider->addRoute($app, $route);
 
     }
