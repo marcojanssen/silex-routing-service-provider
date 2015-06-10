@@ -108,7 +108,7 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param array $methods
      */
     protected function validateMethods(Array $methods) {
-        $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head');
+        $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect');
         foreach (array_map('strtolower', $methods) as $method) {
             if (!in_array($method, $availableMethods)) {
                 throw new InvalidArgumentException('Method "' . $method . '" is not valid, only the following methods are allowed: ' . join(', ', $availableMethods));
