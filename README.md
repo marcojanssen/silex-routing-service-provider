@@ -217,7 +217,7 @@ $app = new Application();
 
 //Set all routes
 $app->register(
-    new RoutingServiceProvider(__DIR__."/../app/config/routes.php")
+    new ConfigServiceProvider(__DIR__."/../app/config/routes.php")
 );
 
 //Add all routes
