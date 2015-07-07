@@ -92,7 +92,7 @@ class RoutingServiceProvider implements ServiceProviderInterface
                 join('|', array_map('strtoupper', $route['method']))
             );
 
-        $supportedProperties = array('value', 'assert', 'before', 'after');
+        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');
         foreach ($supportedProperties AS $property) {
             if (isset($route[$property])) {
                 $this->addActions($controller, $route[$property], $property);

@@ -46,25 +46,41 @@ $routes = array(
 
 Optionally the following parameters can also be added:
 
-* value (array)
+### value (array)
+
+You can add default values for any route variable: http://silex.sensiolabs.org/doc/usage.html#default-values
 
 ``` php
 $value = array('name' => 'value')
 ```
 
-* assert (array)
+### assert (array)
+
+You can add requirements: http://silex.sensiolabs.org/doc/usage.html#requirements
 
 ``` php
 $assert = array('id' => '^[\d]+$')
 ```
 
-* before (array)
+### convert (array)
+
+You can add route variable converters: http://silex.sensiolabs.org/doc/usage.html#route-variable-converters. Before you can use the route variable converter, you need to add it as a service.
+
+``` php
+$after = array('convert' => function() {})
+```
+
+### before (array)
+
+Add a before-middleware: http://silex.sensiolabs.org/doc/middlewares.html#before-middleware
 
 ``` php
 $before = array('before' => function() {})
 ```
 
-* after (array)
+### after (array)
+
+Add an after-middleware: http://silex.sensiolabs.org/doc/middlewares.html#after-middleware
 
 ``` php
 $after = array('after' => function() {})
@@ -251,4 +267,4 @@ $app->register(new RoutingServiceProvider('custom.routing.key'));
 
 ## Todo
 
-convert, there is no option set this per route at the moment
+* convert: route variable converters need to be services. We need a way to add them as a valid callback like `MyNamespace\MyClass::converter` 
