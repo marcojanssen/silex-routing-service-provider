@@ -6,13 +6,13 @@ use Silex\Application;
 use Silex\Controller;
 use Silex\Route;
 use Silex\ServiceProviderInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class RoutingServiceProvider
  * @package MJanssen\Provider
  */
-class RoutingServiceProvider implements ServiceProviderInterface {
+class RoutingServiceProvider implements ServiceProviderInterface
+{
     /**
      * @var
      */
@@ -21,7 +21,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
     /**
      * @param string $appRoutingKey
      */
-    public function __construct($appRoutingKey = 'config.routes') {
+    public function __construct($appRoutingKey = 'config.routes')
+    {
         $this->appRoutingKey = $appRoutingKey;
     }
 
@@ -29,7 +30,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param Application $app
      * @throws \InvalidArgumentException
      */
-    public function register(Application $app) {
+    public function register(Application $app)
+    {
         if (isset($app[$this->appRoutingKey])) {
             if (is_array($app[$this->appRoutingKey])) {
                 $this->addRoutes($app, $app[$this->appRoutingKey]);
@@ -43,7 +45,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param Application $app
      * @codeCoverageIgnore
      */
-    public function boot(Application $app) {
+    public function boot(Application $app)
+    {
     }
 
     /**
@@ -52,7 +55,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param Application $app
      * @param $routes
      */
-    public function addRoutes(Application $app, $routes) {
+    public function addRoutes(Application $app, $routes)
+    {
         foreach ($routes as $name => $route) {
 
             if (is_numeric($name)) {
@@ -70,7 +74,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param array $route
      * @throws InvalidArgumentException
      */
-    public function addRoute(Application $app, array $route, $name = '') {
+    public function addRoute(Application $app, array $route, $name = '')
+    {
         $this->validateRoute($route);
 
 
@@ -107,7 +112,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      *
      * @param array $methods
      */
-    protected function validateMethods(Array $methods) {
+    protected function validateMethods(Array $methods)
+    {
         $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect');
         foreach (array_map('strtolower', $methods) as $method) {
             if (!in_array($method, $availableMethods)) {
@@ -122,7 +128,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param $route
      * @throws \InvalidArgumentException
      */
-    protected function validateRoute($route) {
+    protected function validateRoute($route)
+    {
         if (!isset($route['pattern']) || !isset($route['method']) || !isset($route['controller'])) {
             throw new InvalidArgumentException('Required parameter (pattern/method/controller) is not set.');
         }
@@ -154,7 +161,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param string $routeName
      * @return string
      */
-    protected function sanitizeRouteName($routeName) {
+    protected function sanitizeRouteName($routeName)
+    {
         if (empty($routeName)) {
             //If no routeName is specified,
             //we set an empty route name to force the default route name e.g. "GET_myRouteName"
@@ -173,7 +181,8 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param $type
      * @throws \InvalidArgumentException
      */
-    protected function addActions(Controller $controller, $actions, $type) {
+    protected function addActions(Controller $controller, $actions, $type)
+    {
         if (!is_array($actions)) {
             throw new InvalidArgumentException(
                 sprintf(
@@ -204,19 +213,13 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param $value
      * @param $type
      */
-    protected function addAction(Controller $controller, $name, $value, $type) {
+    protected function addAction(Controller $controller, $name, $value, $type)
+    {
         call_user_func_array(array($controller, $type), array($name, $value));
     }
 
-    /**
-     * Determines whether a variable is valid Closure
-     *
-     * source: http://stackoverflow.com/questions/7101469/determining-if-a-variable-is-a-valid-closure-in-php
-     *
-     * @param $param
-     * @return bool
-     */
-    protected function isClosure($param) {
+    protected function isClosure($param)
+    {
         return is_object($param) && ($param instanceof \Closure);
     }
 
@@ -227,11 +230,12 @@ class RoutingServiceProvider implements ServiceProviderInterface {
      * @param string $type | 'before' or 'after'
      * @param $value
      */
-    protected function addBeforeAfterMiddleware(Controller $controller, $type, $value) {
+    protected function addBeforeAfterMiddleware(Controller $controller, $type, $value)
+    {
         $supportedMWTypes = ['before', 'after'];
 
         if (!in_array($type, $supportedMWTypes)) {
-            throw new InvalidArgumentException(
+            throw new \UnexpectedValueException(
                 sprintf(
                     'type %s not supported',
                     $type
@@ -244,26 +248,37 @@ class RoutingServiceProvider implements ServiceProviderInterface {
             $controller->$type($value);
         } else {
             //In this case a yaml/xml configuration was used
+            $this->addMiddlewareFromConfig($controller, $type, $value);
+        }
+    }
 
-            if (!is_string($value) || strpos($value, '::') === FALSE) {
-                throw new InvalidArgumentException(
-                    sprintf(
-                        '%s is no valid Middleware callback. Please provide the following syntax: NamespaceName\SubNamespaceName\ClassName::methodName',
-                        $value
-                    )
-                );
+    /**
+     * Adds a before/after middleware by its configuration
+     *
+     * @param Controller $controller
+     * @param $type
+     * @param $value
+     */
+    protected function addMiddlewareFromConfig(Controller $controller, $type, $value)
+    {
+        if (!is_string($value) || strpos($value, '::') === FALSE) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    '%s is no valid Middleware callback. Please provide the following syntax: NamespaceName\SubNamespaceName\ClassName::methodName',
+                    $value
+                )
+            );
+        }
+
+        list($class, $method) = explode('::', $value, 2);
+
+        if ($class && $method) {
+
+            if (!method_exists($class, $method)) {
+                throw new \BadMethodCallException(sprintf('Method "%s::%s" does not exist.', $class, $method));
             }
 
-            list($class, $method) = explode('::', $value, 2);
-
-            if ($class && $method) {
-
-                if (!method_exists($class, $method)) {
-                    throw new \BadMethodCallException(sprintf('Method "%s::%s" does not exist.', $class, $method));
-                }
-
-                $controller->$type([new $class, $method]);
-            }
+            $controller->$type([new $class, $method]);
         }
     }
 }
