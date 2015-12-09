@@ -2,9 +2,6 @@
 namespace MJanssen\Provider;
 
 use Silex\Application;
-use MJanssen\Provider\RoutingServiceProvider;
-use Silex\ControllerCollection;
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
@@ -81,14 +78,14 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * test if multiple routes can be added
-    */
+     */
     public function testAddRoutes()
     {
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
 
         $routes = array(
-            'foo' =>  array(
+            'foo' => array(
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
                 'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
@@ -262,9 +259,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     public function testRoutePattern()
     {
         $routeCollection = $this->getValidRoute();
+        /** @var \Silex\Route $route */
         $route = $routeCollection->getIterator()->current();
 
-        $this->assertEquals('/foo', $route->getPattern());
+        $this->assertEquals('/foo', $route->getPath());
     }
 
     /**
@@ -345,8 +343,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
         $route['after'] = array(
-            function() { return 'foo'; },
-            function() { return 'baz'; }
+            function () {
+                return 'foo';
+            },
+            function () {
+                return 'baz';
+            }
 
         );
         $routingServiceProvider->addRoute($app, $route);
@@ -358,8 +360,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
         $route['before'] = array(
-            function() { return 'foo'; },
-            function() { return 'baz'; }
+            function () {
+                return 'foo';
+            },
+            function () {
+                return 'baz';
+            }
         );
         $routingServiceProvider->addRoute($app, $route);
 
@@ -386,6 +392,81 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
         $route['before'] = '';
+        $routingServiceProvider->addRoute($app, $route);
+
+    }
+
+    public function testAddBeforeAfterMiddlewareByString()
+    {
+        $procedureTerminates = false;
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+
+        $middlewareClassName = 'FooMiddleware1';
+        $middlewareMethod = 'foo1';
+
+        //Create a Middleware-class mock
+        /** @var \PHPUnit_Framework_MockObject_MockObject $fooMiddleware */
+        $fooMiddleware = $this->getMockBuilder('none')
+            ->setMockClassName($middlewareClassName)
+            ->setMethods(array($middlewareMethod))
+            ->getMock();
+
+        $route['before'] = [$middlewareClassName . '::' . $middlewareMethod];
+
+        $routingServiceProvider->addRoute($app, $route);
+
+        $procedureTerminates = true;
+        $this->assertTrue($procedureTerminates, 'The procedure did not terminate, therefore the middleware was not added');
+
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddBeforeAfterMiddlewareInvalidArgumentException()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+
+        $middlewareClassName = 'FooMiddleware2';
+        $middlewareMethod = 'foo2';
+
+        //Create a Middleware-class mock
+        /** @var \PHPUnit_Framework_MockObject_MockObject $fooMiddleware */
+        $fooMiddleware = $this->getMockBuilder('none')
+            ->setMockClassName($middlewareClassName)
+            ->setMethods(array($middlewareMethod))
+            ->getMock();
+
+        $route['before'] = [$middlewareClassName . ':' . $middlewareMethod]; //no valid callback
+
+        $routingServiceProvider->addRoute($app, $route);
+    }
+
+    /**
+     * @expectedException \BadMethodCallException
+     * @group test
+     */
+    public function testAddBeforeAfterMiddlewareBadMethodCallException()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+
+        $middlewareClassName = 'FooMiddleware3';
+        $middlewareMethod = 'foo3';
+
+        //Create a Middleware-class mock
+        /** @var \PHPUnit_Framework_MockObject_MockObject $fooMiddleware */
+        $fooMiddleware = $this->getMockBuilder('none')
+            ->setMockClassName($middlewareClassName)
+            ->getMock();
+
+        $route['before'] = [$middlewareClassName . '::' . $middlewareMethod];
+
         $routingServiceProvider->addRoute($app, $route);
 
     }

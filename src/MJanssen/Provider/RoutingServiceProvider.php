@@ -89,10 +89,10 @@ class RoutingServiceProvider implements ServiceProviderInterface
             ->bind(
                 $this->sanitizeRouteName($name)
             )->method(
-                join('|',array_map('strtoupper', $route['method']))
+                join('|', array_map('strtoupper', $route['method']))
             );
 
-        $supportedProperties = array('value', 'assert', 'before', 'after');
+        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');
         foreach ($supportedProperties AS $property) {
             if (isset($route[$property])) {
                 $this->addActions($controller, $route[$property], $property);
@@ -114,8 +114,8 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function validateMethods(Array $methods)
     {
-        $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head');
-        foreach(array_map('strtolower', $methods) as $method) {
+        $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect');
+        foreach (array_map('strtolower', $methods) as $method) {
             if (!in_array($method, $availableMethods)) {
                 throw new InvalidArgumentException('Method "' . $method . '" is not valid, only the following methods are allowed: ' . join(', ', $availableMethods));
             }
@@ -195,10 +195,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
         foreach ($actions as $name => $value) {
             switch ($type) {
                 case 'after':
-                case 'before':
-                    $controller->$type($value);
+                    $this->addBeforeAfterMiddleware($controller, $type, $value);
                     break;
-
+                case 'before':
+                    $this->addBeforeAfterMiddleware($controller, $type, $value);
+                    break;
                 default:
                     $this->addAction($controller, $name, $value, $type);
                     break;
@@ -215,5 +216,69 @@ class RoutingServiceProvider implements ServiceProviderInterface
     protected function addAction(Controller $controller, $name, $value, $type)
     {
         call_user_func_array(array($controller, $type), array($name, $value));
+    }
+
+    protected function isClosure($param)
+    {
+        return is_object($param) && ($param instanceof \Closure);
+    }
+
+    /**
+     * Adds a middleware (before/after)
+     *
+     * @param Controller $controller
+     * @param string $type | 'before' or 'after'
+     * @param $value
+     */
+    protected function addBeforeAfterMiddleware(Controller $controller, $type, $value)
+    {
+        $supportedMWTypes = ['before', 'after'];
+
+        if (!in_array($type, $supportedMWTypes)) {
+            throw new \UnexpectedValueException(
+                sprintf(
+                    'type %s not supported',
+                    $type
+                )
+            );
+        }
+
+        if ($this->isClosure($value)) {
+            //When a closure is provided, we will just load it as a middleware type
+            $controller->$type($value);
+        } else {
+            //In this case a yaml/xml configuration was used
+            $this->addMiddlewareFromConfig($controller, $type, $value);
+        }
+    }
+
+    /**
+     * Adds a before/after middleware by its configuration
+     *
+     * @param Controller $controller
+     * @param $type
+     * @param $value
+     */
+    protected function addMiddlewareFromConfig(Controller $controller, $type, $value)
+    {
+        if (!is_string($value) || strpos($value, '::') === FALSE) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    '%s is no valid Middleware callback. Please provide the following syntax: NamespaceName\SubNamespaceName\ClassName::methodName',
+                    $value
+                )
+            );
+        }
+
+        list($class, $method) = explode('::', $value, 2);
+
+        if ($class && $method) {
+
+            if (!method_exists($class, $method)) {
+                throw new \BadMethodCallException(sprintf('Method "%s::%s" does not exist.', $class, $method));
+            }
+
+            $controller->$type([new $class, $method]);
+        }
     }
 }
