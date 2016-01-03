@@ -76,8 +76,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     public function addRoute(Application $app, array $route, $name = '')
     {
-        $this->validateRoute($route);
+        if (isset($route['method']) && is_string($route['method'])) {
+            $route['method'] = array($route['method']);
+        }
 
+        $this->validateRoute($route);
 
         if (array_key_exists('name', $route)) {
             $name = $route['name'];
