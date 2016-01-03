@@ -148,9 +148,30 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $routingServiceProvider->addRoute($app, $route);
         $routes = $app['controllers']->flush();
-
         $this->assertCount(1, $routes);
     }
+
+    /**
+     * test if single route with string method can be added
+     */
+    public function testStringMethod()
+    {
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+
+        $route = array(
+            'name' => 'foo',
+            'pattern' => '/foo',
+            'controller' => 'MJanssen\Controller\FooController::fooAction',
+            'method' => 'get'
+        );
+
+        $routingServiceProvider->addRoute($app, $route);
+        $routes = $app['controllers']->flush();
+        $it = $routes->getIterator();
+        $this->assertEquals('GET', $it['foo']->getMethods()[0]);
+    }
+
 
     /**
      * test if invalid application config is triggerd
@@ -177,7 +198,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * test if a method should be an array
+     * test if a method should be a string with valid methods
      * @expectedException InvalidArgumentException
      */
     public function testInvalidMethodType()
@@ -185,12 +206,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
         $route = $this->validRoute;
-        $route['method'] = 'get';
+        $route['method'] = 'foo';
         $routingServiceProvider->addRoute($app, $route);
     }
 
     /**
-     * test if a method should be an array
+     * test if a method should be an array with valid methods
      * @expectedException InvalidArgumentException
      */
     public function testInvalidMethodValue()

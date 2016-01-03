@@ -28,7 +28,7 @@ composer require marcojanssen/silex-routing-service-provider
 Each route is required to have the following parameters:
 * pattern (string) 
 * controller (string)
-* method - get, put, post, delete, options, head (array)
+* method - get, put, post, delete, options, head (array|string)
 
 Optionally, you can set a route name (for [named routes](http://silex.sensiolabs.org/doc/usage.html#named-routes)). The key of the $route-array will be used as the route name or you can set it like this:
 
@@ -132,7 +132,7 @@ $routes = array(
         //'name' => 'baz', --> you can omit the route name if a key is set
         'pattern' => '/baz',
         'controller' => 'Baz\Controller\BazController::bazAction',
-        'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+        'method' => 'get'
     )
 );
 
@@ -228,9 +228,7 @@ return array(
         array(
             'pattern' => '/foo/{id}',
             'controller' => 'Foo\Controllers\FooController::getAction',
-            'method' => array(
-                'get'
-            ),
+            'method' => 'get',
             'assert' => array(
                 'id' => '^[\d]+$'
             ),
