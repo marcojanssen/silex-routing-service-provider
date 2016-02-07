@@ -186,13 +186,17 @@ class RoutingServiceProvider implements ServiceProviderInterface
      */
     protected function addActions(Controller $controller, $actions, $type)
     {
-        if (!is_array($actions)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Action %s is not of type Array (%s)',
-                    $type, gettype($actions)
-                )
-            );
+        if (!is_array($actions)){
+            if ($type === 'before' || $type === 'after') {
+                $actions = array($actions);
+            } else {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Action %s is not of type Array (%s)',
+                        $type, gettype($actions)
+                    )
+                );
+            }
         }
 
         foreach ($actions as $name => $value) {

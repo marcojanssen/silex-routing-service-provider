@@ -417,7 +417,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testAddBeforeAfterMiddlewareByString()
+    public function testAddBeforeAfterMiddlewareByArrayString()
     {
         $procedureTerminates = false;
         $app = new Application();
@@ -435,6 +435,32 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $route['before'] = [$middlewareClassName . '::' . $middlewareMethod];
+
+        $routingServiceProvider->addRoute($app, $route);
+
+        $procedureTerminates = true;
+        $this->assertTrue($procedureTerminates, 'The procedure did not terminate, therefore the middleware was not added');
+
+    }
+
+    public function testAddBeforeAfterMiddlewareByString()
+    {
+        $procedureTerminates = false;
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $route = $this->validRoute;
+
+        $middlewareClassName = 'FooMiddleware1';
+        $middlewareMethod = 'foo1';
+
+        //Create a Middleware-class mock
+        /** @var \PHPUnit_Framework_MockObject_MockObject $fooMiddleware */
+        $fooMiddleware = $this->getMockBuilder('none')
+            ->setMockClassName($middlewareClassName)
+            ->setMethods(array($middlewareMethod))
+            ->getMock();
+
+        $route['before'] = $middlewareClassName . '::' . $middlewareMethod;
 
         $routingServiceProvider->addRoute($app, $route);
 
