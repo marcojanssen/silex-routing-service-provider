@@ -70,7 +70,7 @@ You can add route variable converters: http://silex.sensiolabs.org/doc/usage.htm
 $after = array('convert' => function() {})
 ```
 
-### before (array)
+### before (string|array)
 
 Add a before-middleware: http://silex.sensiolabs.org/doc/middlewares.html#before-middleware
 
@@ -78,7 +78,7 @@ Add a before-middleware: http://silex.sensiolabs.org/doc/middlewares.html#before
 $before = array('before' => function() {})
 ```
 
-### after (array)
+### after (string|array)
 
 Add an after-middleware: http://silex.sensiolabs.org/doc/middlewares.html#after-middleware
 
