@@ -5,13 +5,20 @@ use InvalidArgumentException;
 use Silex\Application;
 use Silex\Controller;
 use Silex\Route;
-use Silex\ServiceProviderInterface;
+use Pimple\ServiceProviderInterface;
+use Pimple\Container;
+use Silex\Api\BootableProviderInterface;
+use Silex\Api\EventListenerProviderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class RoutingServiceProvider
  * @package MJanssen\Provider
  */
-class RoutingServiceProvider implements ServiceProviderInterface
+class RoutingServiceProvider implements
+    ServiceProviderInterface,
+    BootableProviderInterface,
+    EventListenerProviderInterface
 {
     /**
      * @var
@@ -27,10 +34,10 @@ class RoutingServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * @param Application $app
+     * @param Container $app
      * @throws \InvalidArgumentException
      */
-    public function register(Application $app)
+    public function register(Container $app)
     {
         if (isset($app[$this->appRoutingKey])) {
             if (is_array($app[$this->appRoutingKey])) {
@@ -50,12 +57,21 @@ class RoutingServiceProvider implements ServiceProviderInterface
     }
 
     /**
+     * @param Container $app
+     * @param EventDispatcherInterface $dispatcher
+     * @codeCoverageIgnore
+     */
+    public function subscribe(Container $app, EventDispatcherInterface $dispatcher)
+    {
+    }
+
+    /**
      * Adds all routes
      *
-     * @param Application $app
+     * @param Container $app
      * @param $routes
      */
-    public function addRoutes(Application $app, $routes)
+    public function addRoutes(Container $app, $routes)
     {
         foreach ($routes as $name => $route) {
 
@@ -70,11 +86,11 @@ class RoutingServiceProvider implements ServiceProviderInterface
     /**
      * Adds a route, a given route-name (for named routes) and all of its methods
      *
-     * @param Application $app
+     * @param Container $app
      * @param array $route
      * @throws InvalidArgumentException
      */
-    public function addRoute(Application $app, array $route, $name = '')
+    public function addRoute(Container $app, array $route, $name = '')
     {
         if (isset($route['method']) && is_string($route['method'])) {
             $route['method'] = array($route['method']);

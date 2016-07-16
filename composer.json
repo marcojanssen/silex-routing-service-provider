@@ -18,7 +18,7 @@
   "description": "Silex provider for adding routes",
   "license": "MIT",
   "require": {
-    "silex/silex": "~1.1"
+    "silex/silex": "2.0.*"
   },
   "suggest": {
     "igorw/config-service-provider": "Allows registering providers with configuration"
