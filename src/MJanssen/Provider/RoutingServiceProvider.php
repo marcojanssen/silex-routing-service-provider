@@ -2,6 +2,8 @@
 namespace MJanssen\Provider;
 
 use InvalidArgumentException;
+use MJanssen\Route\Name;
+use MJanssen\Route\Route;
 use RuntimeException;
 use Silex\Application;
 use Silex\Controller;
@@ -12,7 +14,6 @@ use Silex\Api\EventListenerProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class RoutingServiceProvider
  * @package MJanssen\Provider
  */
 class RoutingServiceProvider implements
@@ -79,10 +80,6 @@ class RoutingServiceProvider implements
     public function addRoutes(Container $container, array $routes)
     {
         foreach ($routes as $name => $route) {
-            if (is_numeric($name)) {
-                $name = '';
-            }
-
             $this->addRoute($container, $route, $name);
         }
     }
@@ -96,23 +93,18 @@ class RoutingServiceProvider implements
      */
     public function addRoute(Container $container, array $route, $name = '')
     {
-        if (isset($route['method']) && !is_array($route['method'])) {
-            $route['method'] = [$route['method']];
+        $route2 = Route::fromArray($route);
+
+        if ($route2->getName()) {
+            $name = $route2->getName();
         }
 
-        $this->validateRoute($route);
+        $name = new Name($name);
 
-        if (array_key_exists('name', $route)) {
-            $name = $route['name'];
-        }
-
-        $controller = $container->match(
-            $route['pattern'],
-            $route['controller'])
-            ->bind(
-                $this->sanitizeRouteName($name)
-            )->method(
-                join('|', array_map('strtoupper', $route['method']))
+        $controller = $container->match($route2->getPattern(), $route2->getController())
+            ->bind((string) $name)
+            ->method(
+                join('|', array_map('strtoupper', $route2->getMethods()))
             );
 
         $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');
@@ -128,58 +120,6 @@ class RoutingServiceProvider implements
             }
         }
     }
-
-    /**
-     * Validates the given methods. Only get, put, post, delete, options, head
-     * are allowed
-     *
-     * @param array $methods
-     */
-    protected function validateMethods(array $methods)
-    {
-        $availableMethods = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect'];
-
-        foreach (array_map('strtolower', $methods) as $method) {
-            if (!in_array($method, $availableMethods)) {
-                throw new InvalidArgumentException('Method "' . $method . '" is not valid, only the following methods are allowed: ' . join(', ', $availableMethods));
-            }
-        }
-    }
-
-    /**
-     * Validates the given $route
-     *
-     * @param $route
-     * @throws \InvalidArgumentException
-     */
-    protected function validateRoute(array $route)
-    {
-        if (!isset($route['pattern'])) {
-            throw new InvalidArgumentException('Required parameter pattern is not set.');
-        }
-
-        if (!isset($route['method'])) {
-            throw new InvalidArgumentException('Required parameter method is not set.');
-        }
-
-        if (!isset($route['controller'])) {
-            throw new InvalidArgumentException('Required parameter controller is not set.');
-        }
-
-        $arrayParameters = array('method', 'assert', 'value');
-
-        foreach ($arrayParameters as $parameter) {
-            if (isset($route[$parameter]) && !is_array($route[$parameter])) {
-                throw new InvalidArgumentException(sprintf(
-                    '%s is not of type Array (%s)',
-                    $parameter, gettype($route[$parameter])
-                ));
-            }
-        }
-
-        $this->validateMethods($route['method']);
-    }
-
 
     /**
      * Sanitizes the routeName for named route:
