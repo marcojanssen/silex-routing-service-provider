@@ -1,57 +1,58 @@
 <?php
 namespace MJanssen\Provider;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Silex\Application;
 use Symfony\Component\Routing\RouteCollection;
 
 class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
-
     private $validRoute = array(
         'pattern' => '/foo',
         'controller' => 'MJanssen\Controller\FooController::fooAction',
-        'method' => array('get'),
+        'method' => ['get'],
         'scheme' => 'https',
-        'value' => array(
+        'value' => [
             'value1' => 'foo',
             'value2' => 'baz'
-        ),
-        'assert' => array(
+        ],
+        'assert' => [
             'id' => 'regexp_id',
             'name' => 'regexp_name'
-        )
+        ]
     );
 
     /**
-     * test if multiple routes can be added through application
+     * @test
      */
-    public function testApplicationRoutes()
+    public function it_adds_multiple_routes_through_application()
     {
         $app = new Application();
 
-        $app['config.routes'] = array(
-            'foo' => array(
+        $app['config.routes'] = [
+            'foo' => [
                 'pattern' => '/foo',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            'baz' => array(
+                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            ],
+            'baz' => [
                 'pattern' => '/baz',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            array(
+                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            ],
+            [
                 'name' => 'fez',
                 'pattern' => '/fez',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            array(
+                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            ],
+            [
                 'pattern' => '/yez',
                 'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            )
-        );
+                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            ]
+        ];
 
         $app->register(new RoutingServiceProvider);
 
@@ -77,9 +78,9 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * test if multiple routes can be added
+     * @test
      */
-    public function testAddRoutes()
+    public function it_adds_multiple_routes()
     {
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
@@ -132,9 +133,9 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * test if single route can be added
+     * @test
      */
-    public function testAddRoute()
+    public function it_adds_route()
     {
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
@@ -152,9 +153,9 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * test if single route with string method can be added
+     * @test
      */
-    public function testStringMethod()
+    public function it_adds_route_with_string_method()
     {
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
@@ -172,12 +173,21 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('GET', $it['foo']->getMethods()[0]);
     }
 
+    /**
+     * @test
+     * @expectedException RuntimeException
+     */
+    public function it_triggers_when_no_container_id_is_set()
+    {
+        $app = new Application();
+        $app->register(new RoutingServiceProvider);
+    }
 
     /**
-     * test if invalid application config is triggerd
+     * @test
      * @expectedException InvalidArgumentException
      */
-    public function testInvalidApplicationConfiguration()
+    public function it_triggers_when_no_routes_are_set()
     {
         $app = new Application();
         $app['config.routes'] = '';

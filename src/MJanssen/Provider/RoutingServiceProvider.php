@@ -2,9 +2,9 @@
 namespace MJanssen\Provider;
 
 use InvalidArgumentException;
+use RuntimeException;
 use Silex\Application;
 use Silex\Controller;
-use Silex\Route;
 use Pimple\ServiceProviderInterface;
 use Pimple\Container;
 use Silex\Api\BootableProviderInterface;
@@ -21,31 +21,36 @@ class RoutingServiceProvider implements
     EventListenerProviderInterface
 {
     /**
-     * @var
+     * @var string
      */
-    protected $appRoutingKey;
+    protected $routingContainerId;
 
     /**
-     * @param string $appRoutingKey
+     * @param string $routingContainerId
      */
-    public function __construct($appRoutingKey = 'config.routes')
+    public function __construct($routingContainerId = 'config.routes')
     {
-        $this->appRoutingKey = $appRoutingKey;
+        $this->routingContainerId = $routingContainerId;
     }
 
     /**
-     * @param Container $app
-     * @throws \InvalidArgumentException
+     * @param Container $container
      */
-    public function register(Container $app)
+    public function register(Container $container)
     {
-        if (isset($app[$this->appRoutingKey])) {
-            if (is_array($app[$this->appRoutingKey])) {
-                $this->addRoutes($app, $app[$this->appRoutingKey]);
-            } else {
-                throw new InvalidArgumentException('config.routes must be of type Array');
-            }
+        if (!$container->offsetExists($this->routingContainerId)) {
+            throw new RuntimeException('Routing container id not set');
         }
+
+        $routes = $container->offsetGet($this->routingContainerId);
+
+        if (!is_array($routes)) {
+            throw new InvalidArgumentException(
+                sprintf('Supplied routes in container with id %s must be of type Array', $this->routingContainerId)
+            );
+        }
+
+        $this->addRoutes($container, $routes);
     }
 
     /**
@@ -57,29 +62,28 @@ class RoutingServiceProvider implements
     }
 
     /**
-     * @param Container $app
+     * @param Container $container
      * @param EventDispatcherInterface $dispatcher
      * @codeCoverageIgnore
      */
-    public function subscribe(Container $app, EventDispatcherInterface $dispatcher)
+    public function subscribe(Container $container, EventDispatcherInterface $dispatcher)
     {
     }
 
     /**
-     * Adds all routes
+     * Add routes
      *
-     * @param Container $app
-     * @param $routes
+     * @param Container $container
+     * @param array $routes
      */
-    public function addRoutes(Container $app, $routes)
+    public function addRoutes(Container $container, array $routes)
     {
         foreach ($routes as $name => $route) {
-
             if (is_numeric($name)) {
                 $name = '';
             }
 
-            $this->addRoute($app, $route, $name);
+            $this->addRoute($container, $route, $name);
         }
     }
 
@@ -90,10 +94,10 @@ class RoutingServiceProvider implements
      * @param array $route
      * @throws InvalidArgumentException
      */
-    public function addRoute(Container $app, array $route, $name = '')
+    public function addRoute(Container $container, array $route, $name = '')
     {
-        if (isset($route['method']) && is_string($route['method'])) {
-            $route['method'] = array($route['method']);
+        if (isset($route['method']) && !is_array($route['method'])) {
+            $route['method'] = [$route['method']];
         }
 
         $this->validateRoute($route);
@@ -102,7 +106,7 @@ class RoutingServiceProvider implements
             $name = $route['name'];
         }
 
-        $controller = $app->match(
+        $controller = $container->match(
             $route['pattern'],
             $route['controller'])
             ->bind(
@@ -131,9 +135,10 @@ class RoutingServiceProvider implements
      *
      * @param array $methods
      */
-    protected function validateMethods(Array $methods)
+    protected function validateMethods(array $methods)
     {
-        $availableMethods = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect');
+        $availableMethods = ['get', 'put', 'post', 'delete', 'options', 'head', 'patch', 'purge', 'options', 'trace', 'connect'];
+
         foreach (array_map('strtolower', $methods) as $method) {
             if (!in_array($method, $availableMethods)) {
                 throw new InvalidArgumentException('Method "' . $method . '" is not valid, only the following methods are allowed: ' . join(', ', $availableMethods));
@@ -142,15 +147,23 @@ class RoutingServiceProvider implements
     }
 
     /**
-     * Validates the given $route Array
+     * Validates the given $route
      *
      * @param $route
      * @throws \InvalidArgumentException
      */
-    protected function validateRoute($route)
+    protected function validateRoute(array $route)
     {
-        if (!isset($route['pattern']) || !isset($route['method']) || !isset($route['controller'])) {
-            throw new InvalidArgumentException('Required parameter (pattern/method/controller) is not set.');
+        if (!isset($route['pattern'])) {
+            throw new InvalidArgumentException('Required parameter pattern is not set.');
+        }
+
+        if (!isset($route['method'])) {
+            throw new InvalidArgumentException('Required parameter method is not set.');
+        }
+
+        if (!isset($route['controller'])) {
+            throw new InvalidArgumentException('Required parameter controller is not set.');
         }
 
         $arrayParameters = array('method', 'assert', 'value');
