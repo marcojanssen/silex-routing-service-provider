@@ -4,10 +4,17 @@ namespace MJanssen\Provider;
 use InvalidArgumentException;
 use RuntimeException;
 use Silex\Application;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
 class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
+    const NAME = 'test';
+    const PATTERN = '/test';
+    const CONTROLLER = 'MJanssen\Controller\FooController::fooAction';
+
+    private $methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'];
+
     private $validRoute = array(
         'pattern' => '/foo',
         'controller' => 'MJanssen\Controller\FooController::fooAction',
@@ -31,50 +38,29 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
 
         $app['config.routes'] = [
-            'foo' => [
-                'pattern' => '/foo',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            'test1' => [
+                'pattern' => '/test1',
+                'controller' => 'MJanssen\Controller\FooController::test1Action',
+                'method' => ['GET']
             ],
-            'baz' => [
-                'pattern' => '/baz',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            'test2' => [
+                'pattern' => '/test2',
+                'controller' => 'MJanssen\Controller\FooController::test2Action',
+                'method' => ['GET']
             ],
-            [
-                'name' => 'fez',
-                'pattern' => '/fez',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
+            'test3' => [
+                'pattern' => '/test3',
+                'controller' => 'MJanssen\Controller\FooController::test3Action',
+                'method' => ['GET']
             ],
-            [
-                'pattern' => '/yez',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => ['get', 'post', 'put', 'delete', 'options', 'head']
-            ]
         ];
 
-        $app->register(new RoutingServiceProvider);
+        $app->register(new RoutingServiceProvider());
 
+        /** @var RouteCollection $routes */
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(4, $routes);
-
-        $iterator = $routes->getIterator();
-
-        $this->assertEquals('foo', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('baz', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('fez', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('GET_POST_PUT_DELETE_OPTIONS_HEAD_yez', $iterator->key());
+        $this->assertCount(3, $routes);
     }
 
     /**
@@ -85,92 +71,155 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
         $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
 
-        $routes = array(
-            'foo' => array(
-                'pattern' => '/foo',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            'baz' => array(
-                'pattern' => '/baz',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            array(
-                'name' => 'fez',
-                'pattern' => '/fez',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            ),
-            array(
-                'pattern' => '/yez',
-                'controller' => 'MJanssen\Controller\FooController::fooAction',
-                'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
-            )
-
-        );
+        $routes = [
+            'test1' => [
+                'pattern' => '/test1',
+                'controller' => 'MJanssen\Controller\FooController::test1Action',
+                'method' => ['GET']
+            ],
+            'test2' => [
+                'pattern' => '/test2',
+                'controller' => 'MJanssen\Controller\FooController::test2Action',
+                'method' => ['GET']
+            ],
+            'test3' => [
+                'pattern' => '/test3',
+                'controller' => 'MJanssen\Controller\FooController::test3Action',
+                'method' => ['GET']
+            ],
+        ];
 
         $routingServiceProvider->addRoutes($app, $routes);
         $routes = $app['controllers']->flush();
 
-        $this->assertCount(4, $routes);
-
-        $iterator = $routes->getIterator();
-
-        $this->assertEquals('foo', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('baz', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('fez', $iterator->key());
-
-        $iterator->next();
-
-        $this->assertEquals('GET_POST_PUT_DELETE_OPTIONS_HEAD_yez', $iterator->key());
+        $this->assertCount(3, $routes);
     }
 
     /**
      * @test
      */
-    public function it_adds_route()
+    public function it_adds_a_route()
     {
-        $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
 
-        $route = array(
-            'name' => 'foo',
-            'pattern' => '/foo',
-            'controller' => 'MJanssen\Controller\FooController::fooAction',
-            'method' => array('get', 'post', 'put', 'delete', 'options', 'head')
+        $routingServiceProvider->addRoute(
+            $app = new Application(),
+            [
+                'name' => self::NAME,
+                'pattern' => self::PATTERN,
+                'controller' => self::CONTROLLER,
+                'method' => $this->methods
+            ]
         );
-
-        $routingServiceProvider->addRoute($app, $route);
         $routes = $app['controllers']->flush();
         $this->assertCount(1, $routes);
+
+        /** @var Route $route */
+        $route = $routes->get(self::NAME);
+
+        $this->assertSame(
+            self::PATTERN,
+            $route->getPath()
+        );
+
+        $this->assertSame(
+            $this->methods,
+            $route->getMethods()
+        );
+
+        $this->assertSame(
+            self::CONTROLLER,
+            $route->getDefault('_controller')
+        );
     }
 
     /**
      * @test
      */
-    public function it_adds_route_with_string_method()
+    public function it_adds_a_route_with_single_method_as_string()
     {
-        $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
 
-        $route = array(
-            'name' => 'foo',
-            'pattern' => '/foo',
-            'controller' => 'MJanssen\Controller\FooController::fooAction',
-            'method' => 'get'
+        $routingServiceProvider->addRoute(
+            $app = new Application(),
+            [
+                'name' => self::NAME,
+                'pattern' => self::PATTERN,
+                'controller' => self::CONTROLLER,
+                'method' => 'get'
+            ]
+        );
+        $routes = $app['controllers']->flush();
+        $this->assertCount(1, $routes);
+
+        $this->assertSame(
+            ['GET'],
+            $routes->get(self::NAME)->getMethods()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_named_route()
+    {
+        $routingServiceProvider = new RoutingServiceProvider();
+
+        $expectedName = 'expectedName';
+        $secondExpectedName = 'secondExpectedName';
+
+        $routingServiceProvider->addRoutes(
+            $app = new Application(), [
+                $expectedName => [
+                    'pattern' => self::PATTERN,
+                    'controller' => self::CONTROLLER,
+                    'method' => 'GET'
+                ],
+                self::NAME => [
+                    'name' => $secondExpectedName,
+                    'pattern' => '/other-pattern',
+                    'controller' => '',
+                    'method' => 'GET'
+                ],
+        ]);
+
+        /** @var RouteCollection $routes */
+        $routes = $app['controllers']->flush();
+        $this->assertCount(2, $routes);
+
+        $this->assertInstanceOf(
+            Route::class,
+            $routes->get($expectedName)
         );
 
-        $routingServiceProvider->addRoute($app, $route);
+        $this->assertInstanceOf(
+            Route::class,
+            $routes->get($secondExpectedName)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_a_default_name_for_a_route()
+    {
+        $routingServiceProvider = new RoutingServiceProvider();
+
+        $routingServiceProvider->addRoute(
+            $app = new Application(),
+            [
+                'pattern' => self::PATTERN,
+                'controller' => self::CONTROLLER,
+                'method' => ['GET', 'POST']
+            ]
+        );
         $routes = $app['controllers']->flush();
-        $it = $routes->getIterator();
-        $this->assertEquals('GET', $it['foo']->getMethods()[0]);
+        $this->assertCount(1, $routes);
+
+        $this->assertInstanceOf(
+            Route::class,
+            $routes->get('GET_POST_test')
+        );
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace MJanssen\Provider;
 
 use InvalidArgumentException;
+use MJanssen\Route\Factory;
 use MJanssen\Route\Name;
 use MJanssen\Route\Route;
 use RuntimeException;
@@ -93,18 +94,15 @@ class RoutingServiceProvider implements
      */
     public function addRoute(Container $container, array $route, $name = '')
     {
-        $route2 = Route::fromArray($route);
-
-        if ($route2->getName()) {
-            $name = $route2->getName();
+        if (!isset($route['name'])) {
+            $route['name'] = $name;
         }
+        $route2 = Factory::fromArray($route);
 
-        $name = new Name($name);
-
-        $controller = $container->match($route2->getPattern(), $route2->getController())
-            ->bind((string) $name)
+        $controller = $container->match((string) $route2->getPattern(), (string) $route2->getController())
+            ->bind((string) $route2->getName())
             ->method(
-                join('|', array_map('strtoupper', $route2->getMethods()))
+                join('|', $route2->getMethods()->toArray())
             );
 
         $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');

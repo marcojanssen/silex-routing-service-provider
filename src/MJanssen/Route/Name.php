@@ -14,13 +14,7 @@ class Name
      */
     public function __construct($name = '')
     {
-        if (empty($name)) {
-            //If no routeName is specified,
-            //we set an empty route name to force the default route name e.g. "GET_myRouteName"
-            $name = '';
-        }
-
-        if (is_numeric($name)) {
+        if (empty($name) || is_numeric($name)) {
             $name = '';
         }
 
