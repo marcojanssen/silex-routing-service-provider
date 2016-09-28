@@ -14,15 +14,15 @@ class Factory
     public static function fromArray(array $route)
     {
         if (!isset($route['pattern'])) {
-            throw new InvalidArgumentException('Required parameter pattern is not set.');
+            throw new InvalidArgumentException('Pattern is required.');
         }
 
         if (!isset($route['method'])) {
-            throw new InvalidArgumentException('Required parameter method is not set.');
+            throw new InvalidArgumentException('Method is required.');
         }
 
         if (!isset($route['controller'])) {
-            throw new InvalidArgumentException('Required parameter controller is not set.');
+            throw new InvalidArgumentException('Controller is required.');
         }
 
         if (isset($route['value']) && !is_array($route['value'])) {

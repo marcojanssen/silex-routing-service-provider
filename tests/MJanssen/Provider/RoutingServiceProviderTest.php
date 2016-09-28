@@ -1,4 +1,5 @@
 <?php
+
 namespace MJanssen\Provider;
 
 use InvalidArgumentException;
@@ -57,10 +58,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
         $app->register(new RoutingServiceProvider());
 
-        /** @var RouteCollection $routes */
-        $routes = $app['controllers']->flush();
-
-        $this->assertCount(3, $routes);
+        $this->assertCount(
+            3,
+            $app['controllers']->flush()
+        );
     }
 
     /**
@@ -68,10 +69,10 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function it_adds_multiple_routes()
     {
-        $app = new Application();
         $routingServiceProvider = new RoutingServiceProvider();
 
-        $routes = [
+        $routingServiceProvider->addRoutes(
+            $app = new Application(), [
             'test1' => [
                 'pattern' => '/test1',
                 'controller' => 'MJanssen\Controller\FooController::test1Action',
@@ -87,12 +88,12 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'controller' => 'MJanssen\Controller\FooController::test3Action',
                 'method' => ['GET']
             ],
-        ];
+        ]);
 
-        $routingServiceProvider->addRoutes($app, $routes);
-        $routes = $app['controllers']->flush();
-
-        $this->assertCount(3, $routes);
+        $this->assertCount(
+            3,
+            $app['controllers']->flush()
+        );
     }
 
     /**
@@ -111,6 +112,8 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'method' => $this->methods
             ]
         );
+
+        /** @var RouteCollection $routes */
         $routes = $app['controllers']->flush();
         $this->assertCount(1, $routes);
 
@@ -149,6 +152,8 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'method' => 'get'
             ]
         );
+
+        /** @var RouteCollection $routes */
         $routes = $app['controllers']->flush();
         $this->assertCount(1, $routes);
 
@@ -213,6 +218,8 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
                 'method' => ['GET', 'POST']
             ]
         );
+
+        /** @var RouteCollection $routes */
         $routes = $app['controllers']->flush();
         $this->assertCount(1, $routes);
 
@@ -224,88 +231,27 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException RuntimeException
      */
-    public function it_triggers_when_no_container_id_is_set()
+    public function it_throws_when_no_container_id_is_set()
     {
         $app = new Application();
+
+        $this->expectException(RuntimeException::class);
+
         $app->register(new RoutingServiceProvider);
     }
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
-    public function it_triggers_when_no_routes_are_set()
+    public function it_throws_when_no_routes_are_set()
     {
         $app = new Application();
         $app['config.routes'] = '';
+
+        $this->expectException(InvalidArgumentException::class);
+
         $app->register(new RoutingServiceProvider);
-    }
-
-    /**
-     * test if method is required
-     * @expectedException InvalidArgumentException
-     */
-    public function testRequiredParameterMethod()
-    {
-        $app = new Application();
-        $routingServiceProvider = new RoutingServiceProvider();
-        $route = $this->validRoute;
-        unset($route['method']);
-        $routingServiceProvider->addRoute($app, $route);
-    }
-
-    /**
-     * test if a method should be a string with valid methods
-     * @expectedException InvalidArgumentException
-     */
-    public function testInvalidMethodType()
-    {
-        $app = new Application();
-        $routingServiceProvider = new RoutingServiceProvider();
-        $route = $this->validRoute;
-        $route['method'] = 'foo';
-        $routingServiceProvider->addRoute($app, $route);
-    }
-
-    /**
-     * test if a method should be an array with valid methods
-     * @expectedException InvalidArgumentException
-     */
-    public function testInvalidMethodValue()
-    {
-        $app = new Application();
-        $routingServiceProvider = new RoutingServiceProvider();
-        $route = $this->validRoute;
-        $route['method'] = array('foo');
-        $routingServiceProvider->addRoute($app, $route);
-    }
-
-    /**
-     * test if controller parameter is required
-     * @expectedException InvalidArgumentException
-     */
-    public function testRequiredControllerParameter()
-    {
-        $app = new Application();
-        $routingServiceProvider = new RoutingServiceProvider();
-        $route = $this->validRoute;
-        unset($route['controller']);
-        $routingServiceProvider->addRoute($app, $route);
-    }
-
-    /**
-     * test if controller parameter is required
-     * @expectedException InvalidArgumentException
-     */
-    public function testRequiredPatternParameter()
-    {
-        $app = new Application();
-        $routingServiceProvider = new RoutingServiceProvider();
-        $route = $this->validRoute;
-        unset($route['pattern']);
-        $routingServiceProvider->addRoute($app, $route);
     }
 
     /**
