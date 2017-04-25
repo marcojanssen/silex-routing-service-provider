@@ -256,7 +256,7 @@ class RoutingServiceProvider implements
 
     protected function isClosure($param)
     {
-        return is_object($param) && ($param instanceof \Closure);
+        return is_object($param) && is_callable($param);
     }
 
     /**
