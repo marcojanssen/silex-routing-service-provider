@@ -346,6 +346,60 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * test if secure matches
+     */
+    public function testRouteSecure()
+    {
+        $route = array(
+            'pattern' => '/bar',
+            'controller' => 'MJanssen\Controller\barController::barAction',
+            'method' => array('get'),
+            'secure' => array('ROLE_ADMIN')
+        );
+        $app = new Application();
+        $app['route_class'] = Security::class;
+        $routingServiceProvider = new RoutingServiceProvider();
+        $routingServiceProvider->addRoute($app, $route);
+        $routeCollection = $app['controllers']->flush();
+        $secure = $routeCollection->getIterator()->current();
+       $this->assertInstanceOf(Security::class, $secure);
+    }
+
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testInvalidSecurityRoute()
+    {
+        $route = array(
+            'pattern' => '/bar',
+            'controller' => 'MJanssen\Controller\barController::barAction',
+            'method' => array('get'),
+            'secure' => array('ROLE_ADMIN')
+        );
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $routingServiceProvider->addRoute($app, $route);
+        $app['controllers']->flush();
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidSecurityRouteParameter()
+    {
+        $route = array(
+            'pattern' => '/bar',
+            'controller' => 'MJanssen\Controller\barController::barAction',
+            'method' => array('get'),
+            'secure' => 'ROLE_ADMIN'
+        );
+        $app = new Application();
+        $routingServiceProvider = new RoutingServiceProvider();
+        $routingServiceProvider->addRoute($app, $route);
+        $app['controllers']->flush();
+    }
+
+    /**
      * @return mixed
      */
     protected function getValidRoute()

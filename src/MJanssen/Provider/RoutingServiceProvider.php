@@ -223,6 +223,9 @@ class RoutingServiceProvider implements
                 case 'before':
                     $this->addBeforeAfterMiddleware($controller, $type, $value);
                     break;
+                case 'secure':
+                    $this->addSecure($controller, $type, $actions);
+                    break;
                 default:
                     $this->addAction($controller, $name, $value, $type);
                     break;
@@ -239,6 +242,16 @@ class RoutingServiceProvider implements
     protected function addAction(Controller $controller, $name, $value, $type)
     {
         call_user_func_array(array($controller, $type), array($name, $value));
+    }
+
+    /**
+     * @param Controller $controller
+     * @param $type
+     * @param array $values
+     */
+    protected function addSecure(Controller $controller, $type, Array $values)
+    {
+        call_user_func_array(array($controller, $type), $values);
     }
 
     protected function isClosure($param)
