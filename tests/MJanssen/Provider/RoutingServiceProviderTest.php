@@ -4,7 +4,7 @@ namespace MJanssen\Provider;
 use Silex\Application;
 use Symfony\Component\Routing\RouteCollection;
 
-class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
+class RoutingServiceProviderTest extends \PHPUnit\Framework\TestCase
 {
 
     private $validRoute = array(
@@ -383,7 +383,7 @@ class RoutingServiceProviderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException InvalidArgumentException
      */
     public function testInvalidSecurityRouteParameter()
     {

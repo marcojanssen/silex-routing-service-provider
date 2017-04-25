@@ -111,7 +111,7 @@ class RoutingServiceProvider implements
                 join('|', array_map('strtoupper', $route['method']))
             );
 
-        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');
+        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after', 'secure');
         foreach ($supportedProperties AS $property) {
             if (isset($route[$property])) {
                 $this->addActions($controller, $route[$property], $property);
