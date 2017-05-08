@@ -111,7 +111,7 @@ class RoutingServiceProvider implements
                 join('|', array_map('strtoupper', $route['method']))
             );
 
-        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after');
+        $supportedProperties = array('value', 'assert', 'convert', 'before', 'after', 'secure');
         foreach ($supportedProperties AS $property) {
             if (isset($route[$property])) {
                 $this->addActions($controller, $route[$property], $property);
@@ -223,6 +223,9 @@ class RoutingServiceProvider implements
                 case 'before':
                     $this->addBeforeAfterMiddleware($controller, $type, $value);
                     break;
+                case 'secure':
+                    $this->addSecure($controller, $type, $actions);
+                    break;
                 default:
                     $this->addAction($controller, $name, $value, $type);
                     break;
@@ -241,9 +244,19 @@ class RoutingServiceProvider implements
         call_user_func_array(array($controller, $type), array($name, $value));
     }
 
+    /**
+     * @param Controller $controller
+     * @param $type
+     * @param array $values
+     */
+    protected function addSecure(Controller $controller, $type, Array $values)
+    {
+        call_user_func_array(array($controller, $type), $values);
+    }
+
     protected function isClosure($param)
     {
-        return is_object($param) && ($param instanceof \Closure);
+        return is_object($param) && is_callable($param);
     }
 
     /**

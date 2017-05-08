@@ -86,6 +86,14 @@ Add an after-middleware: http://silex.sensiolabs.org/doc/middlewares.html#after-
 $after = array('after' => function() {})
 ```
 
+### secure (array)
+
+Secures a controller for the given roles: http://silex.sensiolabs.org/doc/providers/security.html#traits
+
+``` php
+$secure = array('ROLE_ADMIN')
+```
+
 ## Usage
 
 ### Adding a single route
